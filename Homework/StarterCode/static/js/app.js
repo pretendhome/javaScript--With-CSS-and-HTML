@@ -1,112 +1,184 @@
-// from data.js
-var tableData = data;
-//mutible = changable
-//imputible = cant change
-//so we make a copy so we cang manuplate data
-// YOUR CODE HERE!
+function buildMetadata(sample) {
 
-var tbody = d3.select("tbody")
-//2functions
-//A = build html table
-//B = handle click event
+  // @TODO: Complete the following function that builds the metadata panel
 
-function table(fun_data){
-tbody.html("");
-    //1argument
-    //take fun_data - define data - array - for each
-    fun_data.forEach(function(element){
-    var row = tbody.append("tr");
-        Object.values(element).forEach((val) => {
-            var cell = row.append("td");
-                cell.text(val);
-      }
-    );
+  // Use `d3.json` to fetch the metadata for a sample
+  //JS template literal = concatinating strings and examples ${} = this is argument that I want to concatinate
+  //fucntion that returns a promis ---- a promis can either succeed( we get the Json we want) or fail (we dont)
+  var SQLData = `/metadata/${sample}`;
+  d3.json(SQLData).then(function(rsample){
+        //create call back function
+        var panal = d3.select("#sample-metadata")
+        //clear out HTML
+        panal.html("")
+        //Object = this is a JS object (key value pairs)
+            Object.entries(sample).forEach(([key, value]) => {panel.append("h6").text(`${key}: ${value}`);
     })
-}
+  });
+  }
 
-table(tableData)
+    // Use d3 to select the panel with id of `#sample-metadata`
 
-function handle_click(){
-    var date = d3.select("#datetime").property("value")
-    var filtered_data = tableData
-    filtered_data = filtered_data.filter(element => element.datetime === date)
-    table(filtered_data)
-}
-d3.selectAll("#filter-btn").on("click", handle_click);
+    // Use `.html("") to clear any existing metadata
 
+    // Use `Object.entries` to add each key and value pair to the panel
+    // Hint: Inside the loop, you will need to use d3 to append new
+    // tags for each key-value in the metadata.
 
+    // BONUS: Build the Gauge Chart
+    // buildGauge(data.WFREQ);
 
-//var filteredData = people.filter(person => person.bloodType === inputValue);
+//function buildPlot() {
+    /* data route */
+//  var url = "/api/pals";
+//  d3.json(url).then(function(response) {
 //
-// var filtered_data = people.filter(person => person.bloodType === inputValue);
-
-
-
-
-//function handle_click(){
-//    var date = d3.select("#datetime").property("value")
-//    var filtered_data = tableData
-//    filtered_data = filtered_data.filter(function(element){
-//    element.datetime === date
-//    })
-//    table(filtered_data)
+//    console.log(response);
+//
+//    var data = response;
+//
+//    var layout = {
+//      scope: "usa",
+//      title: "Pet Pals",
+//      showlegend: false,
+//      height: 600,
+//            // width: 980,
+//      geo: {
+//        scope: "usa",
+//        projection: {
+//          type: "albers usa"
+//        },
+//        showland: true,
+//        landcolor: "rgb(217, 217, 217)",
+//        subunitwidth: 1,
+//        countrywidth: 1,
+//        subunitcolor: "rgb(255,255,255)",
+//        countrycolor: "rgb(255,255,255)"
+//      }
+//    };
+//
+//    Plotly.newPlot("plot", data, layout);
+//  });
 //}
-//d3.selectAll("#filter-btn").on("click", handle_click);
-
-
-
-
-
-
-// Select the button
-//var button = d3.select("#button");
 //
-//button.on("click", function() {
+//buildPlot();
+
+
+/* data route */
+//var url = "/data";
 //
-//  // Select the input element and get the raw HTML node
-//  var inputElement = d3.select("#patient-form-input");
+//function buildPlot() {
+//  d3.json(url).then(function(response) {
 //
-//  // Get the value property of the input element
-//  var inputValue = inputElement.property("value");
+//    console.log(response);
+//    var trace = {
+//      type: "scatter",
+//      mode: "lines",
+//      name: "Bigfoot Sightings",
+//      x: response.map(data => data.year),
+//      y: response.map(data => data.sightings),
+//      line: {
+//        color: "#17BECF"
+//      }
+//    };
 //
-//  console.log(inputValue);
-//  console.log(tableData);
+//    var data = [trace];
 //
-//  var filteredData = tableData.filter(person => person.bloodType === inputValue);
+//    var layout = {
+//      title: "Bigfoot Sightings Per Year",
+//      xaxis: {
+//        type: "date"
+//      },
+//      yaxis: {
+//        autorange: true,
+//        type: "linear"
+//      }
+//    };
 //
-//  console.log(filteredData);
+//    Plotly.newPlot("plot", data, layout);
+//  });
+//}
 //
-//  // BONUS: Calculate summary statistics for the age field of the filtered data
-//
-//  // First, create an array with just the age values
-//  var ages = filteredData.map(person => person.age);
-//
-//  // Next, use math.js to calculate the mean, median, mode, var, and std of the ages
-//  var mean = math.mean(ages);
-//  var median = math.median(ages);
-//  var mode = math.mode(ages);
-//  var variance = math.var(ages);
-//  var standardDeviation = math.std(ages);
-//
-//  // Then, select the unordered list element by class name
-//  var list = d3.select(".summary");
-//
-//  // remove any children from the list to
-//  list.html("");
-//
-//  // append stats to the list
-//  list.append("li").text("datetime");
-//  list.append("li").text(`Median: ${city}`);
-//  list.append("li").text(`Mode: ${country}`);
-//  list.append("li").text(`Variance: ${shape}`);
-//  list.append("li").text(`Standard Deviation: ${durationMinutes}`);
-//});
+//buildPlot();
 
 
 
 
 
+function buildCharts(sample) {
+
+  // @TODO: Use `d3.json` to fetch the sample data for the plots
+    d3.json(SQLData).then(function(data){
+        var x_axis = data.otu_ids;
+        var y_axis = data.sample_values;
+        var size = data.sample_values;
+        var color = data.otu_ids;
+        var texts = data.otu_labels;
+    })
+    // @TODO: Build a Bubble Chart using the sample data
+    var bubble = {
+        x: x_axis,
+        y: y_axis,
+        text: texts,
+        mode: `markers`,
+        marker: {
+            size: size,
+            color: color
+            }
+        };
+    var data = [bubble];
+    var layout = {
+        title: "Yukky Belly Buttons",
+        xaxis: {title: "OTU ID"
+    }
+    };
+    Plotly.newPlot("bubble", data, layout);
+
+    // @TODO: Build a Pie Chart
+    // HINT: You will need to use slice() to grab the top 10 sample_values,
+    // otu_ids, and labels (10 each).  LOOK FOR SPECIFIC FORMAT FOR EACH IMPUT
+    d3.json(SQLData).then(function(data){
+    var values = data.sample_values.slice(0,10);
+    var labels = data.otu_ids.slice(0,10);
+    var display = data.otu_labels.slice(0,10);
+
+    var pieChart = [{
+    values: values,
+    labels: labels,
+    hovertext: display,
+    type: "pie"
+    }];
+    Plotly.newPlot('pie', pieChart);
+    })
+    };
 
 
+function init() {
+  // Grab a reference to the dropdown select element  --- init = initialize
+  var selector = d3.select("#selDataset");
 
+  // Use the list of sample names to populate the select options
+  d3.json("/names").then((sampleNames) => {
+    sampleNames.forEach((sample) => {
+      selector
+        .append("option")
+        .text(sample)
+        .property("value", sample);
+    });
 
+    // Use the first sample from the list to build the initial plots
+    const firstSample = sampleNames[0];
+    buildCharts(firstSample);
+    buildMetadata(firstSample);
+  });
+}
+
+function optionChanged(newSample) {
+  // Fetch new data each time a new sample is selected
+  //memory = RAM
+  buildCharts(newSample);
+  buildMetadata(newSample);
+}
+
+// Initialize the dashboard
+init();
